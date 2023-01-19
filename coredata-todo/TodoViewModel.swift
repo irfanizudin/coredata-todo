@@ -11,6 +11,8 @@ import CoreData
 class TodoViewModel: ObservableObject {
     @Published var text: String = ""
     @Published var todos: [TodoApp] = []
+    @Published var editedId: String = ""
+    @Published var editedText: String = ""
     
     let container: NSPersistentContainer
     
@@ -19,8 +21,6 @@ class TodoViewModel: ObservableObject {
         container.loadPersistentStores { (description, error) in
             if let error = error {
                 print("failed to load core data = ", error.localizedDescription)
-            } else {
-                print("success loaded coredata")
             }
         }
         getAllTodos()
@@ -58,10 +58,9 @@ class TodoViewModel: ObservableObject {
         saveData()
     }
     
-    func updateTodo(indexSet: IndexSet, text: String) {
-        guard let index = indexSet.first else { return }
-        let todoItem = todos[index]
-        todoItem.text = text
+    func updateTodo(id: String, text: String) {
+        let editedText = todos.filter({ $0.id == id })
+        editedText.first?.text = text
         saveData()
     }
 }

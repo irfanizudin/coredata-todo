@@ -10,11 +10,13 @@ import SwiftUI
 struct InputView: View {
     
     @ObservedObject var vm: TodoViewModel
+    @FocusState var fieldFocus: Bool
     
     var body: some View {
         VStack {
-            TextField("Enter text here...", text: $vm.text)
+            TextField("Enter text here...", text: vm.editedText.isEmpty ? $vm.text : $vm.editedText)
                 .autocorrectionDisabled()
+                .focused($fieldFocus)
                 .padding()
                 .clipShape(RoundedRectangle(cornerRadius: 5))
                 .overlay {
@@ -22,20 +24,30 @@ struct InputView: View {
                         .stroke(Color.indigo)
                 }
             Button {
-                vm.addTodo(text: vm.text)
-                vm.text = ""
+                if vm.editedText.isEmpty {
+                    vm.addTodo(text: vm.text)
+                    vm.text = ""
+                } else {
+                    vm.updateTodo(id: vm.editedId, text: vm.editedText)
+                    vm.editedText = ""
+                }
             } label: {
-                Text("Add")
+                Text(vm.editedText.isEmpty ? "Add" : "Update")
                     .font(.headline)
                     .foregroundColor(Color.white)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.indigo)
+                    .background(vm.text.isEmpty ? Color.gray : Color.indigo)
                     .cornerRadius(5)
             }
-
+            .disabled(vm.text.isEmpty)
+            
         }
         .padding(.horizontal, 15)
+        .onChange(of: vm.editedText) { _ in
+            fieldFocus = true
+            vm.text = vm.editedText
+        }
     }
 }
 

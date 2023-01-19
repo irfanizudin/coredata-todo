@@ -14,12 +14,14 @@ struct TodoListView: View {
     var body: some View {
         List {
             ForEach(vm.todos, id: \.id) { todo in
-                if let text = todo.text {
+                if let text = todo.text,
+                   let id = todo.id {
                     Text(text)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.white)
                         .onTapGesture {
-                            print("Tap")
+                            vm.editedId = id
+                            vm.editedText = text
                         }
                 }
             }
