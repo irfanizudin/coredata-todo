@@ -29,7 +29,7 @@ class TodoViewModel: ObservableObject {
     func getAllTodos() {
         let request = NSFetchRequest<TodoApp>(entityName: "TodoApp")
         do {
-            todos = try container.viewContext.fetch(request)
+            todos = try container.viewContext.fetch(request).sorted(by: {$0.updatedAt! > $1.updatedAt!})
         } catch let error {
             print("failed to get todos = ", error.localizedDescription)
         }
@@ -39,6 +39,8 @@ class TodoViewModel: ObservableObject {
         let newTodo = TodoApp(context: container.viewContext)
         newTodo.id = UUID().uuidString
         newTodo.text = text
+        newTodo.createdAt = Date()
+        newTodo.updatedAt = Date()
         saveData()
     }
     
@@ -55,12 +57,15 @@ class TodoViewModel: ObservableObject {
         guard let index = indexSet.first else { return }
         let todoItem = todos[index]
         container.viewContext.delete(todoItem)
+        text = ""
+        editedText = ""
         saveData()
     }
     
     func updateTodo(id: String, text: String) {
         let editedText = todos.filter({ $0.id == id })
         editedText.first?.text = text
+        editedText.first?.updatedAt = Date()
         saveData()
     }
 }
