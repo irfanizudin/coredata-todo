@@ -9,7 +9,7 @@ import SwiftUI
 
 struct InputView: View {
     
-    @StateObject var vm = TodoViewModel()
+    @ObservedObject var vm: TodoViewModel
     
     var body: some View {
         VStack {
@@ -22,7 +22,8 @@ struct InputView: View {
                         .stroke(Color.indigo)
                 }
             Button {
-                //add
+                vm.addTodo(text: vm.text)
+                vm.text = ""
             } label: {
                 Text("Add")
                     .font(.headline)
@@ -40,6 +41,6 @@ struct InputView: View {
 
 struct InputView_Previews: PreviewProvider {
     static var previews: some View {
-        InputView()
+        InputView(vm: TodoViewModel())
     }
 }

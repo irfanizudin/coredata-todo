@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject var vm = TodoViewModel()
+    
     var body: some View {
         NavigationView {
             VStack {
-              InputView()
+                InputView(vm: vm)
+                TodoListView(vm: vm)
             }
             .navigationTitle("Coredata Todo")
         }
